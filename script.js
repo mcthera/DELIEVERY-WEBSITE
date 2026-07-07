@@ -39,7 +39,19 @@ onSnapshot(menuRef, (snapshot) => {
     });
 });
 
-// 2. CART & ORDERS
+// 2. LOGIN LOGIC (Crucial for Admin Access)
+window.login = () => {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "Admin123") { // Replace with your secure password
+        sessionStorage.setItem('isAdmin', 'true');
+        alert("Logged in as Admin!");
+        window.location.href = "menu.html";
+    } else {
+        alert("Incorrect Password");
+    }
+};
+
+// 3. CART & ORDERS
 window.addToCart = (name, price) => {
     cart.push({ name, price });
     const cartDiv = document.getElementById('cart-items');
@@ -60,19 +72,8 @@ window.sendOrder = async () => {
     document.getElementById('cart-items').innerHTML = '';
     document.getElementById('checkout-btn').style.display = 'none';
 };
-// 2. LOGIN LOGIC (Crucial for Admin Access)
-window.login = () => {
-    const pass = document.getElementById('adminPass').value;
-    if (pass === "Admin123") { // Replace with your secure password
-        sessionStorage.setItem('isAdmin', 'true');
-        alert("Logged in as Admin!");
-        window.location.href = "menu.html";
-    } else {
-        alert("Incorrect Password");
-    }
-};
 
-// 3. ADMIN DASHBOARD
+// 4. ADMIN DASHBOARD & ADD/DELETE
 onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
     const div = document.getElementById('admin-orders');
     if (!div) return;
@@ -91,9 +92,9 @@ window.addItem = async () => {
 
 window.deleteItem = (id) => deleteDoc(doc(db, "menu", id));
 
-// 4. NAVIGATION & INITIALIZATION
+// 5. INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Admin Toggle
+    // Show admin panel if logged in
     if (sessionStorage.getItem('isAdmin') === 'true') {
         const adminPanel = document.querySelector('.admin-panel');
         if (adminPanel) adminPanel.style.display = 'block';
