@@ -4,30 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catering Co. Menu</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav><h1>Catering Co.</h1></nav>
-
-    <div id="menu-items"></div>
-
-    <div id="cart-section" style="margin-top:20px; padding:15px; border:2px dashed #25D366;">
-        <h3>Your Order</h3>
-        <div id="cart-items"></div>
-        <button id="checkout-btn" onclick="sendOrder()" style="display:none;">Checkout on WhatsApp</button>
+ <nav>
+    <div class="nav-header">
+        <h1>Catering Co.</h1>
+        <span class="menu-toggle" onclick="toggleMenu()">☰</span>
     </div>
+    <ul id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="menu.html">Menu</a></li>
+        <li><a href="contact.html">Contact</a></li>
+    </ul>
+</nav>
 
-    <div class="admin-panel" style="display:none; margin-top:50px; padding:20px; border:1px solid #000;">
-        <h2>Admin: Update Menu</h2>
-        <input id="itemName" placeholder="Item Name">
-        <input id="itemPrice" placeholder="Price">
-        <input id="itemImg" placeholder="Image URL">
-        <button onclick="addItem()">Add Item</button>
+    <section>
+        <div id="menu-items"></div>
 
-        <div id="admin-orders" style="margin-top:30px; background:#f9f9f9; padding:20px;">
-            <h3>Incoming Orders</h3>
+        <div id="cart-section">
+            <h3>Your Order</h3>
+            <div id="cart-items"></div>
+            <button id="checkout-btn" onclick="sendOrder()" style="display:none;" class="btn-whatsapp">Checkout on WhatsApp</button>
         </div>
-    </div>
+
+        <div class="admin-panel">
+            <h2>Admin: Update Menu</h2>
+            <input id="itemName" placeholder="Item Name">
+            <input id="itemPrice" placeholder="Price">
+            <input id="itemImg" placeholder="Image URL">
+            <button onclick="addItem()">Add Item</button>
+
+            <div id="admin-orders">
+                <h3>Incoming Orders</h3>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Catering Co.</p>
+    </footer>
 
     <script type="module" src="script.js"></script>
 </body>

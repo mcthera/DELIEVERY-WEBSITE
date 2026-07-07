@@ -3,31 +3,31 @@
 body { font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* Header / Nav */
-nav { 
-    background: #333; color: #fff; padding: 1rem; 
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; 
-}
+nav { background: #333; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
 .nav-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 nav ul { list-style: none; display: none; flex-direction: column; width: 100%; padding: 0; margin: 10px 0 0 0; }
 nav ul.active { display: flex; }
 nav a { color: white; text-decoration: none; padding: 10px; display: block; border-top: 1px solid #444; }
-
 .menu-toggle { cursor: pointer; font-size: 1.5rem; }
 
-/* Main Content Area - Forces Footer Down */
+/* Content */
 section { padding: 40px 20px; flex: 1; text-align: center; }
 
-/* Admin & Menu */
-.admin-panel { display: none; background: #f4f4f4; padding: 20px; border: 1px dashed #333; margin-top: 20px; }
-.menu-item { display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding: 10px; max-width: 500px; margin: auto; }
+/* Menu & Cart */
+#menu-items { display: grid; gap: 10px; max-width: 600px; margin: auto; }
+.menu-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding: 10px; }
+#cart-section { max-width: 600px; margin: 20px auto; padding: 20px; border: 2px dashed #25D366; text-align: left; }
+.cart-item { display: flex; justify-content: space-between; padding: 5px 0; }
+
+/* Admin & Orders */
+.admin-panel { display: none; background: #f4f4f4; padding: 20px; border: 1px dashed #333; margin: 20px auto; max-width: 600px; }
+#admin-orders { margin-top: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; }
+
+/* Buttons & Forms */
+button { background: #333; color: white; padding: 10px; border: none; cursor: pointer; margin-top: 5px; }
+.btn-whatsapp { background: #25D366; }
+.btn-delete { background: #ff4444; }
+input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; }
 
 /* Footer */
 footer { background: #222; color: #fff; padding: 20px; text-align: center; width: 100%; }
-.footer-logo { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
-
-/* Gallery & Forms */
-.gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-.gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-form { max-width: 400px; margin: auto; }
-input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
-button { background: #333; color: white; padding: 10px 20px; border: none; cursor: pointer; width: 100%; }

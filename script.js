@@ -72,3 +72,14 @@ window.deleteItem = (id) => deleteDoc(doc(db, "menu", id));
 document.addEventListener('DOMContentLoaded', () => {
     if (sessionStorage.getItem('isAdmin') === 'true') document.querySelector('.admin-panel').style.display = 'block';
 });
+// ... existing code ...
+
+// Add this function to your script.js
+window.toggleMenu = function() {
+    const navLinks = document.getElementById('navLinks');
+    if (navLinks) {
+        navLinks.classList.toggle('active');
+    }
+};
+
+// ... keep existing code ...
