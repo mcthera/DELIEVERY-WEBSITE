@@ -1,78 +1,73 @@
-document.addEventListener('DOMContentLoaded', () => {
-    checkAdminAccess();
-    if (document.getElementById('menu-items')) loadMenu();
-});
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// THIS LISTENER: Updates the menu automatically if data changes in another tab/window
-window.addEventListener('storage', () => {
-    if (document.getElementById('menu-items')) loadMenu();
-});
+// 1. YOUR FIREBASE CONFIG
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "delievery-catering-website.firebaseapp.com",
+    projectId: "delievery-catering-website",
+    storageBucket: "delievery-catering-website.appspot.com",
+    messagingSenderId: "784914986635",
+    appId: "1:784914986635:web:2b0819a7e32df3644dc68e"
+};
 
-function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+// 2. INITIALIZE FIREBASE
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const menuRef = collection(db, "menu");
 
-function checkAdminAccess() {
-    const adminPanel = document.querySelector('.admin-panel');
-    if (adminPanel && sessionStorage.getItem('isAdmin') === 'true') {
-        adminPanel.style.display = 'block';
-    }
-}
-
-function getMenu() {
-    const localData = JSON.parse(localStorage.getItem('menuItems'));
-    
-    // If empty, return these default items so the user isn't looking at a blank screen
-    if (!localData || localData.length === 0) {
-        return [
-            { id: 101, name: "BANKU", price: "10.00", img: "https://via.placeholder.com/150" },
-            { id: 102, name: "TILAPIA", price: "25.00", img: "https://via.placeholder.com/150" }
-        ];
-    }
-    return localData;
-}
-
-function saveMenu(items) { 
-    localStorage.setItem('menuItems', JSON.stringify(items));
-    // Manually trigger loadMenu for the current tab
-    if (document.getElementById('menu-items')) loadMenu();
-}
-
-function loadMenu() {
+// 3. LISTEN FOR REAL-TIME UPDATES (Syncs everywhere!)
+onSnapshot(menuRef, (snapshot) => {
     const container = document.getElementById('menu-items');
     if (!container) return;
     container.innerHTML = '';
     
-    getMenu().forEach((item) => {
+    snapshot.forEach((doc) => {
+        const item = doc.data();
         const div = document.createElement('div');
         div.className = 'menu-item';
-        div.style.cssText = "display:flex; align-items:center; gap:15px; margin-bottom:10px; padding:10px; border:1px solid #ddd;";
         div.innerHTML = `
-            <img src="${item.img}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+            <img src="${item.img}" style="width:60px; height:60px; object-fit:cover;">
             <div style="flex-grow:1;">
                 <strong>${item.name}</strong><br>
                 <span>${item.price}</span>
             </div>
-            ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="removeItem(${item.id})">Delete</button>` : ''}
+            ${sessionStorage.getItem('isAdmin') === 'true' 
+                ? `<button onclick="deleteItem('${doc.id}')">Delete</button>` 
+                : ''}
         `;
         container.appendChild(div);
     });
-}
+});
 
-function addItem() {
+// 4. ADMIN FUNCTIONS
+window.addItem = async function() {
     const name = document.getElementById('itemName').value;
     const price = document.getElementById('itemPrice').value;
     const img = document.getElementById('itemImg').value;
 
     if (!name || !price || !img) return alert("Fill all fields!");
 
-    const items = getMenu();
-    items.push({ id: Date.now(), name, price, img });
-    saveMenu(items);
-    
+    await addDoc(menuRef, { name, price, img });
+
+    // Clear inputs
     document.getElementById('itemName').value = '';
     document.getElementById('itemPrice').value = '';
     document.getElementById('itemImg').value = '';
-}
+};
 
-function removeItem(id) {
-    saveMenu(getMenu().filter(i => i.id !== id));
-}
+window.deleteItem = async function(id) {
+    await deleteDoc(doc(db, "menu", id));
+};
+
+// 5. AUTH & UI
+window.toggleMenu = function() {
+    document.getElementById('navLinks').classList.toggle('active');
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const adminPanel = document.querySelector('.admin-panel');
+    if (adminPanel && sessionStorage.getItem('isAdmin') === 'true') {
+        adminPanel.style.display = 'block';
+    }
+});
