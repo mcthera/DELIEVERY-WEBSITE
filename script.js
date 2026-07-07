@@ -17,7 +17,7 @@ const db = getFirestore(app);
 const menuRef = collection(db, "menu");
 
 // 3. YOUR WHATSAPP NUMBER (Update this!)
-const MY_WHATSAPP = "233XXXXXXXXXX"; 
+const MY_WHATSAPP = "233544662523"; 
 
 // 4. REAL-TIME LISTENER (Syncs data across all devices)
 onSnapshot(menuRef, (snapshot) => {
