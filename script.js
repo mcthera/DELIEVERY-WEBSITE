@@ -1,9 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// 1. CONFIG
 const firebaseConfig = {
-    apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ",
+    apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ", // Copy the exact key from your console again
     authDomain: "delievery-catering-website.firebaseapp.com",
     projectId: "delievery-catering-website",
     storageBucket: "delievery-catering-website.appspot.com",
@@ -16,10 +15,10 @@ const db = getFirestore(app);
 const menuRef = collection(db, "menu");
 const ordersRef = collection(db, "orders");
 
-const MY_WHATSAPP = "233544662523"; 
+const MY_WHATSAPP = "233544662523";
 let cart = [];
 
-// 2. REAL-TIME MENU RENDERER
+// Menu Renderer
 onSnapshot(menuRef, (snapshot) => {
     const container = document.getElementById('menu-items');
     if (!container) return;
@@ -30,39 +29,32 @@ onSnapshot(menuRef, (snapshot) => {
         div.innerHTML = `
             <div><strong>${item.name}</strong> - ${item.price}</div>
             <a href="https://wa.me/${MY_WHATSAPP}?text=I want: ${item.name}" target="_blank">Order Now</a>
-            <button onclick="addToCart('${item.name}', '${item.price}')">Add to Cart</button>
-            ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="deleteItem('${doc.id}')">Delete</button>` : ''}
+            <button onclick="window.addToCart('${item.name}', '${item.price}')">Add to Cart</button>
+            ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="window.deleteItem('${doc.id}')">Delete</button>` : ''}
         `;
         container.appendChild(div);
     });
 });
 
-// 3. CART & ORDER LOGIC
+// Cart & Orders
 window.addToCart = (name, price) => {
     cart.push({ name, price });
-    updateCartUI();
-};
-
-function updateCartUI() {
     const cartDiv = document.getElementById('cart-items');
     const checkoutBtn = document.getElementById('checkout-btn');
     cartDiv.innerHTML = cart.map(i => `<div>${i.name} - ${i.price}</div>`).join('');
-    checkoutBtn.style.display = cart.length > 0 ? 'block' : 'none';
-}
+    checkoutBtn.style.display = 'block';
+};
 
 window.sendOrder = async () => {
-    await addDoc(ordersRef, {
-        items: cart,
-        total: cart.reduce((sum, i) => sum + parseFloat(i.price), 0),
-        timestamp: serverTimestamp()
-    });
+    await addDoc(ordersRef, { items: cart, total: cart.reduce((s, i) => s + parseFloat(i.price), 0), timestamp: serverTimestamp() });
     let msg = "Order:%0A" + cart.map(i => `- ${i.name}`).join('%0A');
     window.open(`https://wa.me/${MY_WHATSAPP}?text=${msg}`, '_blank');
     cart = [];
-    updateCartUI();
+    document.getElementById('cart-items').innerHTML = '';
+    document.getElementById('checkout-btn').style.display = 'none';
 };
 
-// 4. ADMIN DASHBOARD
+// Admin Dashboard
 onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
     const div = document.getElementById('admin-orders');
     if (!div) return;
