@@ -17,7 +17,18 @@ function checkAdminAccess() {
     }
 }
 
-function getMenu() { return JSON.parse(localStorage.getItem('menuItems')) || []; }
+function getMenu() {
+    const localData = JSON.parse(localStorage.getItem('menuItems'));
+    
+    // If local storage is empty, return these default items
+    if (!localData || localData.length === 0) {
+        return [
+            { id: 1, name: "BANKU", price: "10.00", img: "https://via.placeholder.com/60" },
+            { id: 2, name: "TILAPIA", price: "25.00", img: "https://via.placeholder.com/60" }
+        ];
+    }
+    return localData;
+}
 
 function saveMenu(items) { 
     localStorage.setItem('menuItems', JSON.stringify(items));
