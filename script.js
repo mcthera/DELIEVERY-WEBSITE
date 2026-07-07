@@ -3,12 +3,13 @@ import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "ht
 
 // 1. YOUR FIREBASE CONFIG
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "delievery-catering-website.firebaseapp.com",
-    projectId: "delievery-catering-website",
-    storageBucket: "delievery-catering-website.appspot.com",
-    messagingSenderId: "784914986635",
-    appId: "1:784914986635:web:2b0819a7e32df3644dc68e"
+  apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ",
+  authDomain: "delievery-catering-website.firebaseapp.com",
+  projectId: "delievery-catering-website",
+  storageBucket: "delievery-catering-website.firebasestorage.app",
+  messagingSenderId: "784914986635",
+  appId: "1:784914986635:web:778523f949e047c04dc68e",
+  measurementId: "G-H5WL6WGS2N"
 };
 
 // 2. INITIALIZE FIREBASE
