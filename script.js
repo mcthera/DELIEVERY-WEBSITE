@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// 1. YOUR FIREBASE CONFIG
+// 1. FIREBASE CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ",
     authDomain: "delievery-catering-website.firebaseapp.com",
@@ -11,15 +11,16 @@ const firebaseConfig = {
     appId: "1:784914986635:web:2b0819a7e32df3644dc68e"
 };
 
-// 2. INITIALIZE FIREBASE
+// 2. INITIALIZE SERVICES
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const menuRef = collection(db, "menu");
 
-// 3. YOUR WHATSAPP NUMBER (Update this!)
+// 3. GLOBAL VARIABLES
 const MY_WHATSAPP = "233544662523"; 
+let cart = [];
 
-// 4. REAL-TIME LISTENER (Syncs data across all devices)
+// 4. REAL-TIME MENU RENDERER
 onSnapshot(menuRef, (snapshot) => {
     const container = document.getElementById('menu-items');
     if (!container) return;
@@ -29,34 +30,55 @@ onSnapshot(menuRef, (snapshot) => {
         const item = doc.data();
         const div = document.createElement('div');
         div.className = 'menu-item';
-        div.style.cssText = "display:flex; align-items:center; gap:10px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;";
+        div.style.cssText = "margin-bottom:15px; padding:10px; border:1px solid #ddd; border-radius:8px;";
         
-        // WhatsApp Logic: Creates a professional order message
-        const orderText = `Hello! I would like to order: ${item.name} (${item.price})`;
-        const whatsappLink = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(orderText)}`;
+        const singleOrderLink = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent('I want to order: ' + item.name + ' (' + item.price + ')')}`;
         
         div.innerHTML = `
-            <img src="${item.img}" style="width:70px; height:70px; object-fit:cover; border-radius:8px;">
-            <div style="flex-grow:1;">
-                <strong style="display:block; font-size:1.1em;">${item.name}</strong>
-                <span style="color:#666;">${item.price}</span>
+            <img src="${item.img}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+            <div>
+                <strong>${item.name}</strong> - <span>${item.price}</span>
             </div>
-            <a href="${whatsappLink}" target="_blank" style="background:#25D366; color:white; padding:8px 12px; border-radius:5px; text-decoration:none; font-weight:bold;">Order Now</a>
-            ${sessionStorage.getItem('isAdmin') === 'true' 
-                ? `<button onclick="deleteItem('${doc.id}')" style="background:#ff4444; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Delete</button>` 
-                : ''}
+            <div style="margin-top:10px;">
+                <a href="${singleOrderLink}" target="_blank" style="background:#25D366; color:white; padding:5px 10px; text-decoration:none; border-radius:3px; margin-right:5px;">Order Now</a>
+                <button onclick="addToCart('${item.name}', '${item.price}')">Add to Cart</button>
+                ${sessionStorage.getItem('isAdmin') === 'true' 
+                    ? `<button onclick="deleteItem('${doc.id}')" style="background:#ff4444; color:white; border:none; padding:5px; margin-left:5px;">Delete</button>` 
+                    : ''}
+            </div>
         `;
         container.appendChild(div);
     });
 });
 
-// 5. ADMIN FUNCTIONS
+// 5. CART LOGIC
+window.addToCart = function(name, price) {
+    cart.push({ name, price });
+    updateCartUI();
+};
+
+function updateCartUI() {
+    const cartDiv = document.getElementById('cart-items');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (!cartDiv) return;
+    
+    cartDiv.innerHTML = cart.map(i => `<div>${i.name} - ${i.price}</div>`).join('');
+    checkoutBtn.style.display = cart.length > 0 ? 'block' : 'none';
+}
+
+window.sendOrder = function() {
+    let message = "Hi! I would like to place an order:%0A";
+    cart.forEach(i => message += `- ${i.name} (${i.price})%0A`);
+    window.open(`https://wa.me/${MY_WHATSAPP}?text=${message}`, '_blank');
+};
+
+// 6. ADMIN FUNCTIONS
 window.addItem = async function() {
     const name = document.getElementById('itemName').value;
     const price = document.getElementById('itemPrice').value;
     const img = document.getElementById('itemImg').value;
 
-    if (!name || !price || !img) return alert("Please fill in all fields!");
+    if (!name || !price || !img) return alert("Fill all fields!");
 
     try {
         await addDoc(menuRef, { name, price, img });
@@ -69,12 +91,12 @@ window.addItem = async function() {
 };
 
 window.deleteItem = async function(id) {
-    if(confirm("Are you sure you want to delete this item?")) {
+    if(confirm("Delete this item?")) {
         await deleteDoc(doc(db, "menu", id));
     }
 };
 
-// 6. UI TOGGLE
+// 7. UI TOGGLE & INITIALIZATION
 window.toggleMenu = function() {
     document.getElementById('navLinks').classList.toggle('active');
 };
