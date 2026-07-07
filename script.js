@@ -1,96 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAccess();
-    if (document.getElementById('menu-items')) {
-        loadMenu();
-    }
+    if (document.getElementById('menu-items')) loadMenu();
 });
 
-// Toggle Hamburger Menu
-function toggleMenu() {
-    document.getElementById('navLinks').classList.toggle('active');
-}
-
-// --- Authentication Logic ---
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const pass = document.getElementById('pass').value;
-        if (pass === "Admin123") {
-            sessionStorage.setItem('isAdmin', 'true');
-            alert('Welcome, Admin! Access Granted.');
-            window.location.href = 'menu.html';
-        } else {
-            alert('Access Denied!');
-        }
-    });
-}
+function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
 
 function checkAdminAccess() {
     const adminPanel = document.querySelector('.admin-panel');
-    if (adminPanel) {
-        if (sessionStorage.getItem('isAdmin') === 'true') {
-            adminPanel.style.display = 'block';
-        } else {
-            adminPanel.style.display = 'none';
-        }
+    if (adminPanel && sessionStorage.getItem('isAdmin') === 'true') {
+        adminPanel.style.display = 'block';
     }
 }
 
-// --- Menu Management Logic ---
-function getMenu() {
-    return JSON.parse(localStorage.getItem('menuItems')) || [];
-}
-
-function saveMenu(items) {
-    localStorage.setItem('menuItems', JSON.stringify(items));
-}
+function getMenu() { return JSON.parse(localStorage.getItem('menuItems')) || []; }
+function saveMenu(items) { localStorage.setItem('menuItems', JSON.stringify(items)); }
 
 function loadMenu() {
-    const menuContainer = document.getElementById('menu-items');
-    if (!menuContainer) return;
+    const container = document.getElementById('menu-items');
+    if (!container) return;
+    container.innerHTML = '';
     
-    const items = getMenu();
-    menuContainer.innerHTML = '';
-    
-    items.forEach((item) => {
+    getMenu().forEach((item) => {
         const div = document.createElement('div');
         div.className = 'menu-item';
         div.innerHTML = `
-            <span>${item.name}</span>
-            ${sessionStorage.getItem('isAdmin') === 'true' 
-                ? `<button onclick="removeItem(${item.id})">Delete</button>` 
-                : ''}
+            <img src="${item.img}" style="width:50px; height:50px; object-fit:cover;">
+            <div>
+                <strong>${item.name}</strong><br>
+                <span>${item.price}</span>
+            </div>
+            ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="removeItem(${item.id})">Delete</button>` : ''}
         `;
-        menuContainer.appendChild(div);
+        container.appendChild(div);
     });
 }
 
 function addItem() {
-    const input = document.getElementById('itemInput');
-    if (!input.value) return;
+    const name = document.getElementById('itemName').value;
+    const price = document.getElementById('itemPrice').value;
+    const img = document.getElementById('itemImg').value;
+
+    if (!name || !price || !img) return alert("Fill all fields!");
 
     const items = getMenu();
-    const newItem = { id: Date.now(), name: input.value };
-    items.push(newItem);
+    items.push({ id: Date.now(), name, price, img });
     saveMenu(items);
-    input.value = '';
-    notifyAdmin("Menu Item Added!");
+    
+    // Clear inputs
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemPrice').value = '';
+    document.getElementById('itemImg').value = '';
+    
     loadMenu();
 }
 
 function removeItem(id) {
-    let items = getMenu();
-    items = items.filter(item => item.id !== id);
-    saveMenu(items);
-    notifyAdmin("Menu Item Removed!");
+    saveMenu(getMenu().filter(i => i.id !== id));
     loadMenu();
-}
-
-function notifyAdmin(message) {
-    const notification = document.createElement('div');
-    notification.innerText = message;
-    notification.style.cssText = "position:fixed; top:20px; right:20px; background:#4CAF50; color:white; padding:15px; border-radius:5px; z-index:1000;";
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
 }
