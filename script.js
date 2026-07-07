@@ -20,11 +20,11 @@ function checkAdminAccess() {
 function getMenu() {
     const localData = JSON.parse(localStorage.getItem('menuItems'));
     
-    // If local storage is empty, return these default items
+    // If empty, return these default items so the user isn't looking at a blank screen
     if (!localData || localData.length === 0) {
         return [
-            { id: 1, name: "BANKU", price: "10.00", img: "https://via.placeholder.com/60" },
-            { id: 2, name: "TILAPIA", price: "25.00", img: "https://via.placeholder.com/60" }
+            { id: 101, name: "BANKU", price: "10.00", img: "https://via.placeholder.com/150" },
+            { id: 102, name: "TILAPIA", price: "25.00", img: "https://via.placeholder.com/150" }
         ];
     }
     return localData;
