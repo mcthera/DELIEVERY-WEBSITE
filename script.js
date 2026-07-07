@@ -74,12 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // ... existing code ...
 
-// Add this function to your script.js
+// Ensure this is attached to the window object
 window.toggleMenu = function() {
     const navLinks = document.getElementById('navLinks');
     if (navLinks) {
         navLinks.classList.toggle('active');
+        console.log("Menu toggled"); // Check the browser console on your phone to see if this appears
     }
 };
-
-// ... keep existing code ...
