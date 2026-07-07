@@ -60,6 +60,17 @@ window.sendOrder = async () => {
     document.getElementById('cart-items').innerHTML = '';
     document.getElementById('checkout-btn').style.display = 'none';
 };
+// 2. LOGIN LOGIC (Crucial for Admin Access)
+window.login = () => {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "Admin123") { // Replace with your secure password
+        sessionStorage.setItem('isAdmin', 'true');
+        alert("Logged in as Admin!");
+        window.location.href = "menu.html";
+    } else {
+        alert("Incorrect Password");
+    }
+};
 
 // 3. ADMIN DASHBOARD
 onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
