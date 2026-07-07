@@ -41,13 +41,23 @@ onSnapshot(menuRef, (snapshot) => {
 
 // 2. LOGIN LOGIC (Crucial for Admin Access)
 window.login = () => {
-    const pass = document.getElementById('adminPass').value;
-    if (pass === "Admin123") { // Replace with your secure password
+    const passInput = document.getElementById('adminPass');
+    
+    // Check if the element even exists
+    if (!passInput) {
+        alert("Error: Password input field not found on this page!");
+        return;
+    }
+
+    const pass = passInput.value;
+    console.log("Password entered:", pass); // Check your browser console!
+
+    if (pass === "Admin123") {
         sessionStorage.setItem('isAdmin', 'true');
         alert("Logged in as Admin!");
         window.location.href = "menu.html";
     } else {
-        alert("Incorrect Password");
+        alert("Incorrect Password. Please try again.");
     }
 };
 
