@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ", // Copy the exact key from your console again
+    apiKey: "AIzaSyCBiQyuqUAhT42ks3WMr2sJmCZcv40JFxQ",
     authDomain: "delievery-catering-website.firebaseapp.com",
     projectId: "delievery-catering-website",
     storageBucket: "delievery-catering-website.appspot.com",
@@ -18,7 +18,7 @@ const ordersRef = collection(db, "orders");
 const MY_WHATSAPP = "233544662523";
 let cart = [];
 
-// Menu Renderer
+// 1. MENU RENDERER
 onSnapshot(menuRef, (snapshot) => {
     const container = document.getElementById('menu-items');
     if (!container) return;
@@ -26,27 +26,34 @@ onSnapshot(menuRef, (snapshot) => {
     snapshot.forEach((doc) => {
         const item = doc.data();
         const div = document.createElement('div');
+        div.className = 'menu-item';
         div.innerHTML = `
             <div><strong>${item.name}</strong> - ${item.price}</div>
-            <a href="https://wa.me/${MY_WHATSAPP}?text=I want: ${item.name}" target="_blank">Order Now</a>
-            <button onclick="window.addToCart('${item.name}', '${item.price}')">Add to Cart</button>
-            ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="window.deleteItem('${doc.id}')">Delete</button>` : ''}
+            <div>
+                <a href="https://wa.me/${MY_WHATSAPP}?text=I want: ${item.name}" target="_blank">Order Now</a>
+                <button onclick="window.addToCart('${item.name}', '${item.price}')">Add to Cart</button>
+                ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="window.deleteItem('${doc.id}')" class="btn-delete">Delete</button>` : ''}
+            </div>
         `;
         container.appendChild(div);
     });
 });
 
-// Cart & Orders
+// 2. CART & ORDERS
 window.addToCart = (name, price) => {
     cart.push({ name, price });
     const cartDiv = document.getElementById('cart-items');
     const checkoutBtn = document.getElementById('checkout-btn');
-    cartDiv.innerHTML = cart.map(i => `<div>${i.name} - ${i.price}</div>`).join('');
-    checkoutBtn.style.display = 'block';
+    if (cartDiv) cartDiv.innerHTML = cart.map(i => `<div>${i.name} - ${i.price}</div>`).join('');
+    if (checkoutBtn) checkoutBtn.style.display = 'block';
 };
 
 window.sendOrder = async () => {
-    await addDoc(ordersRef, { items: cart, total: cart.reduce((s, i) => s + parseFloat(i.price), 0), timestamp: serverTimestamp() });
+    await addDoc(ordersRef, { 
+        items: cart, 
+        total: cart.reduce((s, i) => s + parseFloat(i.price), 0), 
+        timestamp: serverTimestamp() 
+    });
     let msg = "Order:%0A" + cart.map(i => `- ${i.name}`).join('%0A');
     window.open(`https://wa.me/${MY_WHATSAPP}?text=${msg}`, '_blank');
     cart = [];
@@ -54,7 +61,7 @@ window.sendOrder = async () => {
     document.getElementById('checkout-btn').style.display = 'none';
 };
 
-// Admin Dashboard
+// 3. ADMIN DASHBOARD
 onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
     const div = document.getElementById('admin-orders');
     if (!div) return;
@@ -64,21 +71,29 @@ onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
 });
 
 window.addItem = async () => {
-    await addDoc(menuRef, { name: document.getElementById('itemName').value, price: document.getElementById('itemPrice').value, img: document.getElementById('itemImg').value });
+    await addDoc(menuRef, { 
+        name: document.getElementById('itemName').value, 
+        price: document.getElementById('itemPrice').value, 
+        img: document.getElementById('itemImg').value 
+    });
 };
 
 window.deleteItem = (id) => deleteDoc(doc(db, "menu", id));
 
+// 4. NAVIGATION & INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    if (sessionStorage.getItem('isAdmin') === 'true') document.querySelector('.admin-panel').style.display = 'block';
-});
-// ... existing code ...
-
-// Ensure this is attached to the window object
-window.toggleMenu = function() {
-    const navLinks = document.getElementById('navLinks');
-    if (navLinks) {
-        navLinks.classList.toggle('active');
-        console.log("Menu toggled"); // Check the browser console on your phone to see if this appears
+    // Admin Toggle
+    if (sessionStorage.getItem('isAdmin') === 'true') {
+        const adminPanel = document.querySelector('.admin-panel');
+        if (adminPanel) adminPanel.style.display = 'block';
     }
-};
+
+    // Mobile Menu Toggle
+    const toggleBtn = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('navLinks');
+    if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+});
