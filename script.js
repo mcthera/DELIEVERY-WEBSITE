@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('menu-items')) loadMenu();
 });
 
+// THIS LISTENER: Updates the menu automatically if data changes in another tab/window
+window.addEventListener('storage', () => {
+    if (document.getElementById('menu-items')) loadMenu();
+});
+
 function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
 
 function checkAdminAccess() {
@@ -13,7 +18,12 @@ function checkAdminAccess() {
 }
 
 function getMenu() { return JSON.parse(localStorage.getItem('menuItems')) || []; }
-function saveMenu(items) { localStorage.setItem('menuItems', JSON.stringify(items)); }
+
+function saveMenu(items) { 
+    localStorage.setItem('menuItems', JSON.stringify(items));
+    // Manually trigger loadMenu for the current tab
+    if (document.getElementById('menu-items')) loadMenu();
+}
 
 function loadMenu() {
     const container = document.getElementById('menu-items');
@@ -23,9 +33,10 @@ function loadMenu() {
     getMenu().forEach((item) => {
         const div = document.createElement('div');
         div.className = 'menu-item';
+        div.style.cssText = "display:flex; align-items:center; gap:15px; margin-bottom:10px; padding:10px; border:1px solid #ddd;";
         div.innerHTML = `
-            <img src="${item.img}" style="width:50px; height:50px; object-fit:cover;">
-            <div>
+            <img src="${item.img}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+            <div style="flex-grow:1;">
                 <strong>${item.name}</strong><br>
                 <span>${item.price}</span>
             </div>
@@ -46,15 +57,11 @@ function addItem() {
     items.push({ id: Date.now(), name, price, img });
     saveMenu(items);
     
-    // Clear inputs
     document.getElementById('itemName').value = '';
     document.getElementById('itemPrice').value = '';
     document.getElementById('itemImg').value = '';
-    
-    loadMenu();
 }
 
 function removeItem(id) {
     saveMenu(getMenu().filter(i => i.id !== id));
-    loadMenu();
 }
