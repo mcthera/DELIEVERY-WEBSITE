@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catering Co. Menu</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Meet the Chef | Gourmet Catering</title>
+        <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Premium catering services for all your special events. Fresh, delicious food delivered to you.">
+<meta name="keywords" content="catering, food delivery, event planning, gourmet catering">
+<meta property="og:title" content="Gourmet Catering Co.">
+<meta property="og:description" content="Professional catering services for all occasions.">
+<meta property="og:type" content="website">
 </head>
 <body>
 
@@ -17,6 +22,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="menu.html">Menu</a></li>
         <li><a href="contact.html">Contact</a></li>
+        <li><a href="chef.html">MEET THE CHEFF</a></li>
     </ul>
 </nav>
 
@@ -26,6 +32,13 @@
         <div id="cart-section">
             <h3>Your Order</h3>
             <div id="cart-items"></div>
+            <div id="checkout-form" style="margin-top: 15px;">
+    <input type="text" id="custName" placeholder="Your Name" required><br>
+    <input type="text" id="custLoc" placeholder="Delivery Location" required><br>
+    <input type="tel" id="custPhone" placeholder="Phone Number" required><br>
+    <textarea id="custComment" placeholder="Special instructions (e.g., allergies, delivery notes)"></textarea>
+    <input type="date" id="orderDate"><br>
+</div>
             <button id="checkout-btn" onclick="sendOrder()" style="display:none;" class="btn-whatsapp">Checkout on WhatsApp</button>
         </div>
 
@@ -45,6 +58,9 @@
     <footer>
         <p>&copy; 2026 Catering Co.</p>
     </footer>
+    <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:white; padding:15px; border-radius:8px; display:none; z-index:1000;">
+    Item added to cart!
+</div>
 
     <script type="module" src="script.js"></script>
 </body>

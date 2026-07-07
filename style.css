@@ -40,3 +40,81 @@ input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;
 
 /* Footer */
 footer { background: #222; color: #fff; padding: 20px; text-align: center; width: 100%; }
+/*home screen*/
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f4f4f4;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #ff4444;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 40px;
+}
+
+.service-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/*css for the chef page*/
+/* Layout for the Chef Page */
+.chef-section {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.chef-img {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 5px solid #ff4444; /* Matches your brand color */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.philosophy {
+    font-size: 1.4rem;
+    color: #444;
+    font-style: italic;
+    margin-bottom: 30px;
+}
+
+.bio {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+/* Ensure consistent nav styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: #333;
+    color: white;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}

@@ -18,7 +18,43 @@ const ordersRef = collection(db, "orders");
 const MY_WHATSAPP = "233544662523";
 let cart = [];
 
-// 1. MENU RENDERER
+// 1. HELPER: Toasts
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+}
+
+// 2. HELPER: Cart UI
+function updateCartUI() {
+    const cartDiv = document.getElementById('cart-items');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (!cartDiv) return;
+
+    let total = 0;
+    cartDiv.innerHTML = cart.map((i, index) => {
+        const itemTotal = i.price * i.qty;
+        total += itemTotal;
+        return `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>${i.qty} x ${i.name} - ₵${itemTotal.toFixed(2)}</span>
+                <button onclick="window.removeFromCart(${index})" style="background: #ff4444; color:white; border:none; padding: 2px 8px; cursor:pointer;">Remove</button>
+            </div>
+        `;
+    }).join('');
+    
+    cartDiv.innerHTML += `<h3>Total: ₵${total.toFixed(2)}</h3>`;
+    if (checkoutBtn) checkoutBtn.style.display = cart.length > 0 ? 'block' : 'none';
+}
+window.removeFromCart = (index) => {
+    cart.splice(index, 1); // Removes the item at this specific position
+    updateCartUI();        // Re-draws the cart immediately
+    showToast("Item removed from cart");
+};
+
+// 3. MENU RENDERER
 onSnapshot(menuRef, (snapshot) => {
     const container = document.getElementById('menu-items');
     if (!container) return;
@@ -27,95 +63,95 @@ onSnapshot(menuRef, (snapshot) => {
         const item = doc.data();
         const div = document.createElement('div');
         div.className = 'menu-item';
+        // We set the innerHTML first, then add the listener to avoid quote errors
         div.innerHTML = `
-            <div><strong>${item.name}</strong> - ${item.price}</div>
             <div>
-                <a href="https://wa.me/${MY_WHATSAPP}?text=I want: ${item.name}" target="_blank">Order Now</a>
-                <button onclick="window.addToCart('${item.name}', '${item.price}')">Add to Cart</button>
-                ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="window.deleteItem('${doc.id}')" class="btn-delete">Delete</button>` : ''}
+                <img src="${item.img}" style="width: 50px; height: 50px; object-fit: cover;">
+                <strong>${item.name}</strong> - $${item.price}
+            </div>
+            <div>
+                <input type="number" id="qty-${doc.id}" value="1" min="1" style="width: 50px;">
+                <button id="btn-${doc.id}">Add to Cart</button>
+                ${sessionStorage.getItem('isAdmin') === 'true' ? `<button onclick="window.deleteItem('${doc.id}')">Delete</button>` : ''}
             </div>
         `;
         container.appendChild(div);
+
+        // Attach event listener directly to the button
+        document.getElementById(`btn-${doc.id}`).onclick = () => {
+            const qty = parseInt(document.getElementById(`qty-${doc.id}`).value);
+            window.addToCart(item.name, item.price, qty);
+        };
     });
 });
 
-// 2. LOGIN LOGIC (Crucial for Admin Access)
-window.login = () => {
-    const passInput = document.getElementById('adminPass');
-    
-    // Check if the element even exists
-    if (!passInput) {
-        alert("Error: Password input field not found on this page!");
-        return;
-    }
-
-    const pass = passInput.value;
-    console.log("Password entered:", pass); // Check your browser console!
-
-    if (pass === "Admin123") {
-        sessionStorage.setItem('isAdmin', 'true');
-        alert("Logged in as Admin!");
-        window.location.href = "menu.html";
-    } else {
-        alert("Incorrect Password. Please try again.");
-    }
+// 4. LOGIC
+window.addToCart = (name, price, qty) => {
+    cart.push({ name, price: parseFloat(price), qty });
+    updateCartUI();
+    showToast(qty + " x " + name + " added!");
 };
 
-// 3. CART & ORDERS
-window.addToCart = (name, price) => {
-    cart.push({ name, price });
-    const cartDiv = document.getElementById('cart-items');
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (cartDiv) cartDiv.innerHTML = cart.map(i => `<div>${i.name} - ${i.price}</div>`).join('');
-    if (checkoutBtn) checkoutBtn.style.display = 'block';
+window.login = () => {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "Admin123") {
+        sessionStorage.setItem('isAdmin', 'true');
+        window.location.href = "menu.html";
+    } else { alert("Incorrect Password"); }
 };
 
 window.sendOrder = async () => {
-    await addDoc(ordersRef, { 
-        items: cart, 
-        total: cart.reduce((s, i) => s + parseFloat(i.price), 0), 
-        timestamp: serverTimestamp() 
-    });
-    let msg = "Order:%0A" + cart.map(i => `- ${i.name}`).join('%0A');
+    // 1. Get Customer Details (Including Comment)
+    const name = document.getElementById('custName').value;
+    const loc = document.getElementById('custLoc').value;
+    const phone = document.getElementById('custPhone').value;
+    const date = document.getElementById('orderDate').value;
+    const comment = document.getElementById('custComment').value; // Get the comment
+
+    if (!name || !loc || !phone) {
+        alert("Please fill in your Name, Location, and Phone Number!");
+        return;
+    }
+
+    const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+    // 2. Build Message with Comment
+    let msg = `New Order Details:%0A%0A`;
+    msg += `Name: ${name}%0A`;
+    msg += `Location: ${loc}%0A`;
+    msg += `Phone: ${phone}%0A`;
+    msg += `Date: ${date}%0A`;
+    msg += `Notes: ${comment}%0A%0A`; // Added Notes to the message
+    msg += `Items:%0A` + cart.map(i => `${i.qty} x ${i.name} - ₵${(i.price * i.qty).toFixed(2)}`).join('%0A');
+    msg += `%0A%0A-------------------%0ATotal Amount: ₵${total.toFixed(2)}`;
+
     window.open(`https://wa.me/${MY_WHATSAPP}?text=${msg}`, '_blank');
+    
+    // 3. Reset
     cart = [];
+    updateCartUI();
     document.getElementById('cart-items').innerHTML = '';
+    // Clear the form fields as well
+    document.getElementById('custComment').value = ''; 
+    document.getElementById('checkout-form').style.display = 'none';
     document.getElementById('checkout-btn').style.display = 'none';
 };
 
-// 4. ADMIN DASHBOARD & ADD/DELETE
-onSnapshot(query(ordersRef, orderBy("timestamp", "desc")), (snapshot) => {
-    const div = document.getElementById('admin-orders');
-    if (!div) return;
-    div.innerHTML = '<h3>Incoming Orders</h3>' + snapshot.docs.map(d => 
-        `<div style="margin:10px; border-bottom:1px solid #ccc;">Total: ${d.data().total}</div>`
-    ).join('');
-});
-
 window.addItem = async () => {
-    await addDoc(menuRef, { 
-        name: document.getElementById('itemName').value, 
-        price: document.getElementById('itemPrice').value, 
-        img: document.getElementById('itemImg').value 
-    });
+    await addDoc(menuRef, { name: document.getElementById('itemName').value, price: document.getElementById('itemPrice').value, img: document.getElementById('itemImg').value });
 };
 
 window.deleteItem = (id) => deleteDoc(doc(db, "menu", id));
 
 // 5. INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Show admin panel if logged in
     if (sessionStorage.getItem('isAdmin') === 'true') {
         const adminPanel = document.querySelector('.admin-panel');
         if (adminPanel) adminPanel.style.display = 'block';
     }
-
-    // Mobile Menu Toggle
     const toggleBtn = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('navLinks');
     if (toggleBtn && navLinks) {
-        toggleBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+        toggleBtn.addEventListener('click', () => navLinks.classList.toggle('active'));
     }
 });
