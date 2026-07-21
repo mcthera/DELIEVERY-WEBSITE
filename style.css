@@ -4,14 +4,13 @@ body { font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direc
 
 /* Header / Nav */
 nav { background: #333; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-.nav-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.nav-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-left: 350px; font-style: italic;}
 /* Ensure this is in your style.css */
 nav ul { 
     list-style: none; 
     display: none; /* Hidden by default */
     flex-direction: column; 
-    width: 100%; 
-}
+    width: 50%;}
 
 nav ul.active { 
     display: flex !important; /* Forces it to show when .active is added */
@@ -40,28 +39,41 @@ input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;
 
 /* Footer */
 footer { background: #222; color: #fff; padding: 20px; text-align: center; width: 100%; }
+
 /*home screen*/
 .hero {
     text-align: center;
     padding: 60px 20px;
-    background: #f4f4f4;
+    background-image: url("https://th.bing.com/th/id/OIP.vNp4BW0xqL-IWcYNx6SiEAHaE8?w=264&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3.jpg");}
+
+.welcome-banner {
+    background: #fff;
+    padding: 30px 20px;
+    border-bottom: 1px solid #eee;
 }
 
 .cta-button {
     display: inline-block;
-    padding: 12px 30px;
+    padding: 10px 20px;
     background: #ff4444;
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    margin-top: 20px;
+    margin-top: 15px;
+    transition: background 0.3s ease;
+}
+
+.cta-button:hover {
+    background: #e03838;
 }
 
 .service-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    padding: 40px;
+    padding: 40px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 .service-card {
@@ -69,6 +81,117 @@ footer { background: #222; color: #fff; padding: 20px; text-align: center; width
     padding: 20px;
     border-radius: 8px;
     text-align: center;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* New CSS: Service Card Images */
+.service-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+/* New CSS: Testimonials Section */
+.testimonials {
+    background: #f9f9f9;
+    padding: 50px 20px;
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 30px auto 0 auto;
+}
+
+.testimonial-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.testimonial-card span {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+/* New CSS: Expanded Footer Layout */
+footer {
+    background: #222;
+    color: #fff;
+    padding: 40px 20px 20px 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.footer-newsletter {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto 25px auto;
+}
+
+.footer-newsletter input {
+    margin-bottom: 0;
+    border-radius: 4px;
+    border: none;
+}
+
+.footer-newsletter button {
+    margin-top: 0;
+    background: #ff4444;
+    border-radius: 4px;
+    padding: 0 15px;
+}
+
+.footer-bottom {
+    border-top: 1px solid #444;
+    padding-top: 15px;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.footer-bottom a {
+    color: #ff4444;
+    text-decoration: none;
 }
 
 /*css for the chef page*/
